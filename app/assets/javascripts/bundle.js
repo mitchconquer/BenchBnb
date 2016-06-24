@@ -49,6 +49,7 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(38);
 	var BenchStore = __webpack_require__(168);
+	var BenchApiUtil = __webpack_require__(190);
 
 	document.addEventListener("DOMContentLoaded", function () {
 	  ReactDOM.render(React.createElement(
@@ -59,6 +60,7 @@
 	});
 
 	window.BenchStore = BenchStore;
+	window.BenchApiUtil = BenchApiUtil;
 
 /***/ },
 /* 1 */
@@ -20366,16 +20368,27 @@
 
 	var BenchStore = new Store(AppDispatcher);
 
-	BenchStore.all = function () {
-	  return Object.assign({}, _benches);
-	};
-
 	function resetAllBenches(benches) {
 	  _benches = {};
 	  for (var key in benches) {
 	    if (benches.hasOwnProperty(key)) {
 	      _benches[key] = benches[key];
 	    }
+	  }
+	};
+
+	BenchStore.all = function () {
+	  return Object.assign({}, _benches);
+	};
+
+	BenchStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "BENCHES_RECEIVED":
+	      resetAllBenches(payload.benches);
+	      BenchStore.__emitChange();
+	      break;
+	    default:
+	      break;
 	  }
 	};
 
@@ -27141,6 +27154,46 @@
 
 	module.exports = Dispatcher;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(187);
+	var BenchConstants = __webpack_require__(191);
+
+	var BenchApiUtil = {
+	  fetchAll: function fetchAll() {
+	    $.ajax({
+	      url: 'api/benches',
+	      method: 'GET',
+	      dataType: 'json',
+	      success: function success(response) {
+	        console.log(response);
+	        AppDispatcher.dispatch({
+	          actionType: BenchConstants.BENCHES_RECEIVED,
+	          benches: response
+	        });
+	      }
+	    });
+	  }
+	};
+
+	module.exports = BenchApiUtil;
+
+/***/ },
+/* 191 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var BenchConstants = {
+	  BENCHES_RECEIVED: "BENCHES_RECEIVED"
+	};
+
+	module.exports = BenchConstants;
 
 /***/ }
 /******/ ]);
