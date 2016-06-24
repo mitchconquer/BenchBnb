@@ -50,13 +50,10 @@
 	var ReactDOM = __webpack_require__(38);
 	var BenchStore = __webpack_require__(168);
 	var BenchActions = __webpack_require__(192);
+	var BenchIndex = __webpack_require__(193);
 
 	document.addEventListener("DOMContentLoaded", function () {
-	  ReactDOM.render(React.createElement(
-	    'div',
-	    null,
-	    'Oh hai!'
-	  ), document.getElementById('content'));
+	  ReactDOM.render(React.createElement(BenchIndex, null), document.getElementById('content'));
 	});
 
 	window.BenchStore = BenchStore;
@@ -27211,6 +27208,88 @@
 	  }
 	};
 	module.exports = BenchActions;
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1),
+	    BenchStore = __webpack_require__(168),
+	    BenchIndexItem = __webpack_require__(194);
+
+	var BenchIndex = React.createClass({
+	  displayName: 'BenchIndex',
+	  getInitialState: function getInitialState() {
+	    return { benches: BenchStore.all() };
+	  },
+	  _onChange: function _onChange() {
+	    this.setState({ benches: BenchStore.all() });
+	  },
+	  componentDidMount: function componentDidMount() {
+	    BenchActions.fetchAllBenches();
+	    this.storeListener = BenchStore.addListener(this._onChange);
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    this.storeListener.remove();
+	  },
+	  render: function render() {
+	    var _this = this;
+
+	    if (this.state.benches) {
+	      var benches = Object.keys(this.state.benches).map(function (id) {
+	        var bench = _this.state.benches[parseInt(id)];
+	        return React.createElement(BenchIndexItem, { bench: bench, key: bench.id });
+	      });
+
+	      return React.createElement(
+	        'div',
+	        null,
+	        benches
+	      );
+	    }
+	    return React.createElement('div', null);
+	  }
+	});
+
+	module.exports = BenchIndex;
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+
+	var BenchIndexItem = React.createClass({
+	  displayName: 'BenchIndexItem',
+	  render: function render() {
+	    if (this.props.bench) {
+	      var bench = this.props.bench;
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'p',
+	          null,
+	          'Description: ',
+	          bench.description,
+	          React.createElement('br', null),
+	          'Latitude: ',
+	          bench.lat,
+	          React.createElement('br', null),
+	          'Longitude: ',
+	          bench.lng
+	        )
+	      );
+	    }
+	    return React.createElement('div', null);
+	  }
+	});
+
+	module.exports = BenchIndexItem;
 
 /***/ }
 /******/ ]);
