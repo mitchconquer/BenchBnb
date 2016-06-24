@@ -49,7 +49,7 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(38);
 	var BenchStore = __webpack_require__(168);
-	var BenchApiUtil = __webpack_require__(190);
+	var BenchActions = __webpack_require__(192);
 
 	document.addEventListener("DOMContentLoaded", function () {
 	  ReactDOM.render(React.createElement(
@@ -60,7 +60,7 @@
 	});
 
 	window.BenchStore = BenchStore;
-	window.BenchApiUtil = BenchApiUtil;
+	window.BenchActions = BenchActions;
 
 /***/ },
 /* 1 */
@@ -27162,21 +27162,14 @@
 	'use strict';
 
 	var AppDispatcher = __webpack_require__(187);
-	var BenchConstants = __webpack_require__(191);
 
 	var BenchApiUtil = {
-	  fetchAll: function fetchAll() {
+	  fetchAllBenches: function fetchAllBenches(successCallback) {
 	    $.ajax({
 	      url: 'api/benches',
 	      method: 'GET',
 	      dataType: 'json',
-	      success: function success(response) {
-	        console.log(response);
-	        AppDispatcher.dispatch({
-	          actionType: BenchConstants.BENCHES_RECEIVED,
-	          benches: response
-	        });
-	      }
+	      success: successCallback
 	    });
 	  }
 	};
@@ -27194,6 +27187,30 @@
 	};
 
 	module.exports = BenchConstants;
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var BenchApiUtil = __webpack_require__(190),
+	    AppDispatcher = __webpack_require__(187),
+	    BenchConstants = __webpack_require__(191);
+
+	var BenchActions = {
+	  fetchAllBenches: function fetchAllBenches() {
+	    BenchApiUtil.fetchAllBenches(this.receiveAllBenches);
+	  },
+	  receiveAllBenches: function receiveAllBenches(benches) {
+	    console.log(benches);
+	    AppDispatcher.dispatch({
+	      actionType: BenchConstants.BENCHES_RECEIVED,
+	      benches: benches
+	    });
+	  }
+	};
+	module.exports = BenchActions;
 
 /***/ }
 /******/ ]);
