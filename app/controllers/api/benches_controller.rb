@@ -2,13 +2,18 @@ class Api::BenchesController < ApplicationController
 
   def index
     @benches = Bench.all
-    render :json @benches
+    render :index
+  end
+
+  def show
+    @bench = Bench.find(params[:id])
+    render :show
   end
 
   def create
     @bench = Bench.new(bench_params)
     if @bench.save!
-      render :json @bench
+      render :show
     end
   end
 
