@@ -13,3 +13,23 @@
  *= require_tree .
  *= require_self
  */
+
+
+ .map-pane,
+ .benches-index-pane {
+  width: 50%;
+  float: left;
+ }
+
+ .map-pane{
+  background-color: salmon;
+ }
+
+ .benches-index-pane{
+  background-color: cadetblue;
+ }
+
+ .map {
+  height: 500px;
+  width: 500px;
+ }

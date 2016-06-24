@@ -50,10 +50,10 @@
 	var ReactDOM = __webpack_require__(38);
 	var BenchStore = __webpack_require__(168);
 	var BenchActions = __webpack_require__(192);
-	var BenchIndex = __webpack_require__(193);
+	var Search = __webpack_require__(196);
 
 	document.addEventListener("DOMContentLoaded", function () {
-	  ReactDOM.render(React.createElement(BenchIndex, null), document.getElementById('content'));
+	  ReactDOM.render(React.createElement(Search, null), document.getElementById('content'));
 	});
 
 	window.BenchStore = BenchStore;
@@ -27199,6 +27199,9 @@
 	  fetchAllBenches: function fetchAllBenches() {
 	    BenchApiUtil.fetchAllBenches(this.receiveAllBenches);
 	  },
+	  fetchAll: function fetchAll() {
+	    this.fetchAllBenches();
+	  },
 	  receiveAllBenches: function receiveAllBenches(benches) {
 	    console.log(benches);
 	    AppDispatcher.dispatch({
@@ -27217,7 +27220,8 @@
 
 	var React = __webpack_require__(1),
 	    BenchStore = __webpack_require__(168),
-	    BenchIndexItem = __webpack_require__(194);
+	    BenchIndexItem = __webpack_require__(194),
+	    BenchMap = __webpack_require__(195);
 
 	var BenchIndex = React.createClass({
 	  displayName: 'BenchIndex',
@@ -27228,7 +27232,6 @@
 	    this.setState({ benches: BenchStore.all() });
 	  },
 	  componentDidMount: function componentDidMount() {
-	    BenchActions.fetchAllBenches();
 	    this.storeListener = BenchStore.addListener(this._onChange);
 	  },
 	  componentWillUnmount: function componentWillUnmount() {
@@ -27245,7 +27248,7 @@
 
 	      return React.createElement(
 	        'div',
-	        null,
+	        { className: 'benches-index-pane' },
 	        benches
 	      );
 	    }
@@ -27290,6 +27293,108 @@
 	});
 
 	module.exports = BenchIndexItem;
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1),
+	    ReactDOM = __webpack_require__(38),
+	    BenchStore = __webpack_require__(168),
+	    BenchActions = __webpack_require__(192);
+
+	var BenchMap = React.createClass({
+	  displayName: 'BenchMap',
+	  getInitialState: function getInitialState() {
+	    return {
+	      benches: BenchStore.all()
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    // Render map
+	    var mapDOMNode = ReactDOM.findDOMNode(this.refs.map);
+	    var mapOptions = {
+	      center: { lat: 37.7758, lng: -122.435 },
+	      zoom: 13
+	    };
+	    this.map = new google.maps.Map(mapDOMNode, mapOptions);
+
+	    this.map.addListener("idle", function () {
+	      console.log('idling');BenchActions.fetchAll();
+	    });
+
+	    // Add event listener to BenchStore
+	    this.benchStoreListener = BenchStore.addListener(this._onChange);
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    this.benchStoreListener.remove();
+	  },
+	  _onChange: function _onChange() {
+	    this.setState({ benches: BenchStore.all() });
+	  },
+	  createMarkers: function createMarkers() {
+	    var _this = this;
+
+	    var markers = [];
+	    var benches = this.state.benches;
+
+	    Object.keys(benches).forEach(function (idString) {
+	      var id = parseInt(idString);
+	      var markerLatLng = new google.maps.LatLng(benches[id].lat, benches[id].lng);
+
+	      var marker = new google.maps.Marker({
+	        position: markerLatLng,
+	        title: benches[id].title,
+	        map: _this.map
+	      });
+
+	      markers.push(marker);
+	    });
+
+	    return markers;
+	  },
+	  render: function render() {
+	    this.createMarkers();
+
+	    return React.createElement('div', { className: 'map', ref: 'map' });
+	  }
+	});
+
+	module.exports = BenchMap;
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1),
+	    BenchMap = __webpack_require__(195),
+	    BenchIndex = __webpack_require__(193);
+
+	var Search = React.createClass({
+	  displayName: 'Search',
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'search' },
+	      React.createElement(
+	        'div',
+	        { className: 'map-pane' },
+	        React.createElement(BenchMap, null)
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'bench-index-pane' },
+	        React.createElement(BenchIndex, null)
+	      )
+	    );
+	  }
+	});
+
+	module.exports = Search;
 
 /***/ }
 /******/ ]);

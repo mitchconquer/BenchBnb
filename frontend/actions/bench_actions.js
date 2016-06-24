@@ -6,6 +6,11 @@ const BenchActions = {
   fetchAllBenches() {
     BenchApiUtil.fetchAllBenches(this.receiveAllBenches);
   },
+
+  fetchAll() {
+    this.fetchAllBenches();
+  },
+
   receiveAllBenches(benches) {
     console.log(benches);
     AppDispatcher.dispatch({

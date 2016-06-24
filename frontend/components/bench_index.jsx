@@ -1,6 +1,7 @@
 const React = require('react'),
       BenchStore = require('../stores/bench_store'),
-      BenchIndexItem = require('./bench_index_item');
+      BenchIndexItem = require('./bench_index_item'),
+      BenchMap = require('./bench_map');
 
 const BenchIndex = React.createClass({
   getInitialState() {
@@ -12,7 +13,6 @@ const BenchIndex = React.createClass({
   },
 
   componentDidMount() {
-    BenchActions.fetchAllBenches();
     this.storeListener = BenchStore.addListener(this._onChange);  
   },
 
@@ -28,7 +28,9 @@ const BenchIndex = React.createClass({
       });
 
       return (
-        <div>{benches}</div>
+        <div className="benches-index-pane">
+          {benches}
+        </div>
       );
     }
     return (<div></div>);
