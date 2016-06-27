@@ -19,7 +19,7 @@ const BenchMap = React.createClass({
     };
     this.map = new google.maps.Map(mapDOMNode, mapOptions);
 
-    this.map.addListener("idle", function(){console.log('idling');BenchActions.fetchAll();});
+    this.map.addListener("idle", function(){BenchActions.fetchAll();});
 
     // Add event listener to BenchStore
     this.benchStoreListener = BenchStore.addListener(this._onChange);
