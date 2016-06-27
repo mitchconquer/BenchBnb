@@ -27322,7 +27322,7 @@
 	    this.map = new google.maps.Map(mapDOMNode, mapOptions);
 
 	    this.map.addListener("idle", function () {
-	      console.log('idling');BenchActions.fetchAll();
+	      BenchActions.fetchAll();
 	    });
 
 	    // Add event listener to BenchStore
